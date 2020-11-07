@@ -27,17 +27,17 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AX
 # load low-level drivers
 loadrt hal_bb_gpio output_pins=811,817,826,911,914,921,926 input_pins=807,808,809,810,816,913,915
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG)
-#newinst gantry gantry.0 pincount=2
+newinst gantry gantry.0 pincount=2
 
 # ################################################
 # THREADS
 # ################################################
 addf hpg.capture-position                 servo-thread
 addf bb_gpio.read                         servo-thread
-#addf gantry.0.read                        servo-thread
+addf gantry.0.read                        servo-thread
 addf motion-command-handler               servo-thread
 addf motion-controller                    servo-thread
-#addf gantry.0.write                       servo-thread
+addf gantry.0.write                       servo-thread
 addf hpg.update                           servo-thread
 addf bb_gpio.write                        servo-thread
 
@@ -82,26 +82,23 @@ setp hpg.stepgen.00.steppin        813
 # P8.44 PRU1.out4
 setp hpg.stepgen.00.dirpin         812
 
+# ################
+# y-axis gantry
+# ################
+
+net y1pos-cmd gantry.0.joint.00.pos-cmd => hpg.stepgen.01.position-cmd
+net y1pos-fb  gantry.0.joint.00.pos-fb  <= hpg.stepgen.01.position-fb
+net y2pos-cmd gantry.0.joint.01.pos-cmd => hpg.stepgen.02.position-cmd
+net y2pos-fb  gantry.0.joint.01.pos-fb  <= hpg.stepgen.02.position-fb
+net ypos-cmd  gantry.0.position-cmd     <= axis.1.motor-pos-cmd
+net ypos-fb   gantry.0.position-fb      => axis.1.motor-pos-fb
+net yenable axis.1.amp-enable-out => hpg.stepgen.01.enable hpg.stepgen.02.enable
+setp gantry.0.search-vel [AXIS_1]HOME_SEARCH_VEL
+
 
 # ################
-# Y [1] Axis
+# Y1 Axis
 # ################
-
-# axis enable chain
-newsig emcmot.01.enable bit
-sets emcmot.01.enable FALSE
-
-net emcmot.01.enable <= axis.1.amp-enable-out
-net emcmot.01.enable => hpg.stepgen.01.enable
-
-
-# position command and feedback
-net emcmot.01.pos-cmd <= axis.1.motor-pos-cmd
-net emcmot.01.pos-cmd => hpg.stepgen.01.position-cmd
-
-net motor.01.pos-fb <= hpg.stepgen.01.position-fb
-net motor.01.pos-fb => axis.1.motor-pos-fb
-
 
 # timing parameters
 setp hpg.stepgen.01.dirsetup        [AXIS_1]DIRSETUP
@@ -121,6 +118,28 @@ setp hpg.stepgen.01.steppin        815
 # P8.39 PRU1.out6
 setp hpg.stepgen.01.dirpin         814
 
+# ################
+# Y2 Axis
+# ################
+
+# timing parameters
+setp hpg.stepgen.02.dirsetup        [AXIS_1]DIRSETUP
+setp hpg.stepgen.02.dirhold         [AXIS_1]DIRHOLD
+
+setp hpg.stepgen.02.steplen         [AXIS_1]STEPLEN
+setp hpg.stepgen.02.stepspace       [AXIS_1]STEPSPACE
+
+setp hpg.stepgen.02.position-scale  [AXIS_1]SCALE
+
+setp hpg.stepgen.02.maxvel          [AXIS_1]STEPGEN_MAX_VEL
+setp hpg.stepgen.02.maxaccel        [AXIS_1]STEPGEN_MAX_ACC
+
+#setp hpg.stepgen.02.step_type       0
+# P8.42 PRU1.out5
+setp hpg.stepgen.02.steppin        916
+# P8.39 PRU1.out6
+setp hpg.stepgen.02.dirpin         912
+
 
 # ################
 # Z [2] Axis
@@ -131,34 +150,34 @@ newsig emcmot.02.enable bit
 sets emcmot.02.enable FALSE
 
 net emcmot.02.enable <= axis.2.amp-enable-out
-net emcmot.02.enable => hpg.stepgen.02.enable
+net emcmot.02.enable => hpg.stepgen.03.enable
 
 
 # position command and feedback
 net emcmot.02.pos-cmd <= axis.2.motor-pos-cmd
-net emcmot.02.pos-cmd => hpg.stepgen.02.position-cmd
+net emcmot.02.pos-cmd => hpg.stepgen.03.position-cmd
 
-net motor.02.pos-fb <= hpg.stepgen.02.position-fb
+net motor.02.pos-fb <= hpg.stepgen.03.position-fb
 net motor.02.pos-fb => axis.2.motor-pos-fb
 
 
 # timing parameters
-setp hpg.stepgen.02.dirsetup        [AXIS_2]DIRSETUP
-setp hpg.stepgen.02.dirhold         [AXIS_2]DIRHOLD
+setp hpg.stepgen.03.dirsetup        [AXIS_2]DIRSETUP
+setp hpg.stepgen.03.dirhold         [AXIS_2]DIRHOLD
 
-setp hpg.stepgen.02.steplen         [AXIS_2]STEPLEN
-setp hpg.stepgen.02.stepspace       [AXIS_2]STEPSPACE
+setp hpg.stepgen.03.steplen         [AXIS_2]STEPLEN
+setp hpg.stepgen.03.stepspace       [AXIS_2]STEPSPACE
 
-setp hpg.stepgen.02.position-scale  [AXIS_2]SCALE
+setp hpg.stepgen.03.position-scale  [AXIS_2]SCALE
 
-setp hpg.stepgen.02.maxvel          [AXIS_2]STEPGEN_MAX_VEL
-setp hpg.stepgen.02.maxaccel        [AXIS_2]STEPGEN_MAX_ACC
+setp hpg.stepgen.03.maxvel          [AXIS_2]STEPGEN_MAX_VEL
+setp hpg.stepgen.03.maxaccel        [AXIS_2]STEPGEN_MAX_ACC
 
-#setp hpg.stepgen.02.step_type       0
+#setp hpg.stepgen.03.step_type       0
 # P8.27 PRU1.out8
-setp hpg.stepgen.02.steppin        819
+setp hpg.stepgen.03.steppin        819
 # P8.29 PRU1.out9
-setp hpg.stepgen.02.dirpin         818
+setp hpg.stepgen.03.dirpin         818
 
 
 # ################
@@ -170,34 +189,34 @@ newsig emcmot.03.enable bit
 sets emcmot.03.enable FALSE
 
 net emcmot.03.enable <= axis.3.amp-enable-out
-net emcmot.03.enable => hpg.stepgen.03.enable
+net emcmot.03.enable => hpg.stepgen.04.enable
 
 
 # position command and feedback
 net emcmot.03.pos-cmd <= axis.3.motor-pos-cmd
-net emcmot.03.pos-cmd => hpg.stepgen.03.position-cmd
+net emcmot.03.pos-cmd => hpg.stepgen.04.position-cmd
 
-net motor.03.pos-fb <= hpg.stepgen.03.position-fb
+net motor.03.pos-fb <= hpg.stepgen.04.position-fb
 net motor.03.pos-fb => axis.3.motor-pos-fb
 
 
 # timing parameters
-setp hpg.stepgen.03.dirsetup        [AXIS_3]DIRSETUP
-setp hpg.stepgen.03.dirhold         [AXIS_3]DIRHOLD
+setp hpg.stepgen.04.dirsetup        [AXIS_3]DIRSETUP
+setp hpg.stepgen.04.dirhold         [AXIS_3]DIRHOLD
 
-setp hpg.stepgen.03.steplen         [AXIS_3]STEPLEN
-setp hpg.stepgen.03.stepspace       [AXIS_3]STEPSPACE
+setp hpg.stepgen.04.steplen         [AXIS_3]STEPLEN
+setp hpg.stepgen.04.stepspace       [AXIS_3]STEPSPACE
 
-setp hpg.stepgen.03.position-scale  [AXIS_3]SCALE
+setp hpg.stepgen.04.position-scale  [AXIS_3]SCALE
 
-setp hpg.stepgen.03.maxvel          [AXIS_3]STEPGEN_MAX_VEL
-setp hpg.stepgen.03.maxaccel        [AXIS_3]STEPGEN_MAX_ACC
+setp hpg.stepgen.04.maxvel          [AXIS_3]STEPGEN_MAX_VEL
+setp hpg.stepgen.04.maxaccel        [AXIS_3]STEPGEN_MAX_ACC
 
-#setp hpg.stepgen.03.step_type       0
+#setp hpg.stepgen.04.step_type       0
 # P8.30 GPIO2.25
-setp hpg.stepgen.03.steppin        917
+setp hpg.stepgen.04.steppin        917
 # P8.21 GPIO1.30
-setp hpg.stepgen.03.dirpin         918
+setp hpg.stepgen.04.dirpin         918
 
 
 # ##################################################
