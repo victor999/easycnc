@@ -1,7 +1,9 @@
 # easycnc
 machinekit extension for beaglebone custom CNC controller
 
-This configuration drives a standard 4-axis 3D printer using the PRU for
+https://hackaday.io/project/170751-beaglebone-cnc-controller
+
+This configuration drives a C-beam CNC (XYYZA configuration) using the PRU for
 high speed step/dir pulse generation and a Easy CNC driver board.
 
 There are currently no limit switches configured, so adjust the MIN_LIMIT
