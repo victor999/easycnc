@@ -2,7 +2,7 @@
 machinekit extension for beaglebone custom CNC controller
 
 This configuration drives a standard 4-axis 3D printer using the PRU for
-high speed step/dir pulse generation and a CRAMPS driver board.
+high speed step/dir pulse generation and a Easy CNC driver board.
 
 There are currently no limit switches configured, so adjust the MIN_LIMIT
 and MAX_LIMIT axis settings in the ini file if your printer has less than
