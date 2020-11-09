@@ -268,13 +268,12 @@ setp bb_gpio.p8.in-10.invert 1
 # You probably want to setup homing in the INI file, as well
 net limit-x-min => axis.0.home-sw-in
 net limit-x-min => axis.0.neg-lim-sw-in
-net limit-x-max => axis.0.pos-lim-sw-in
+
 net limit-y-min => axis.1.home-sw-in
 net limit-y-min => axis.1.neg-lim-sw-in
-net limit-y-max => axis.1.pos-lim-sw-in
+
 net limit-z-min => axis.2.home-sw-in
 net limit-z-min => axis.2.neg-lim-sw-in
-net limit-z-max => axis.2.pos-lim-sw-in
 
 # connect the spindle control to the relay pin
 net spindle-cw => bb_gpio.p9.out-21
