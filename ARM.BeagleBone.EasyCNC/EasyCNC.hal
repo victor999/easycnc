@@ -9,7 +9,7 @@
 # Launch the setup script to make sure hardware setup looks good
 #loadusr -w /home/machinekit/machinekit/configs/ARM.BeagleBone.EasyCNC/setup.sh
 loadusr -w ./setup.sh
-loadusr -w config-pin -f ./EasyCNC.bbio
+#loadusr -w config-pin -f ./EasyCNC.bbio
 
 
 # ###################################
@@ -24,8 +24,9 @@ loadrt tp
 # motion controller, get name and thread periods from ini file
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AXES tp=tp kins=trivkins
 
-# load low-level drivers
+# load low-level drivers (must not include pins used by PRU)
 loadrt hal_bb_gpio output_pins=811,817,826,911,914,921,926 input_pins=807,808,809,810,816,913,915
+
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG)
 newinst gantry gantry.0 pincount=2
 
