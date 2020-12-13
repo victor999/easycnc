@@ -6,16 +6,7 @@ https://hackaday.io/project/170751-beaglebone-cnc-controller
 This configuration drives a C-beam CNC (XYYZA configuration) using the PRU for
 high speed step/dir pulse generation and a Easy CNC driver board.
 
-There are currently no limit switches configured, so adjust the MIN_LIMIT
-and MAX_LIMIT axis settings in the ini file if your printer has less than
-200 mm of X/Y travel.  If you have limit switches, uncomment the marked
-lines in the HAL file to enable them.
-
-X/Y/Z settings:
-
-max vel   = 200 mm/s
-max accel = 3000 mm/s/s
-scale     = 80 steps/mm
+MIN Limit switches are configured
 
 Adjust as required for your machine.  Make scale negative to invert any
 axis that is moving 'backwards'.
